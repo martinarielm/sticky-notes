@@ -1,0 +1,17 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "PT Mono", monospace;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}

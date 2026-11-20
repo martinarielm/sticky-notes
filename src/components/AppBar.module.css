@@ -1,0 +1,22 @@
+.appbar {
+  align-items: center;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  padding: 16px 24px;
+}
+
+.appbar h1 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.controls {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.controls input {
+  width: 8ch;
+}

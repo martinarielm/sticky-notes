@@ -1,0 +1,20 @@
+.note {
+  padding: 10px;
+  position: absolute;
+  background-color: #fffae3;
+  border: 1px solid #e3dec5;
+  border-radius: 5px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03);
+  z-index: 1;
+}
+
+.content {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  resize: none;
+}
