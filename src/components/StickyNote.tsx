@@ -10,11 +10,40 @@ interface DragRef {
   initialY: number;
 }
 
+function getBoundedPosition(
+  event: React.PointerEvent<HTMLDivElement>,
+  drag: DragRef,
+) {
+  const element = event.currentTarget;
+  const board = element.parentElement!;
+
+  return {
+    x: Math.max(
+      0,
+      Math.min(
+        drag.initialX + event.clientX - drag.startX,
+        board.clientWidth - element.offsetWidth,
+      ),
+    ),
+    y: Math.max(
+      0,
+      Math.min(
+        drag.initialY + event.clientY - drag.startY,
+        board.clientHeight - element.offsetHeight,
+      ),
+    ),
+  };
+}
+
 interface StickyNoteProps {
   note: Note;
   onDraggingChange: (isDragging: boolean) => void;
   onSaveContent: (id: string, content: string) => void;
-  onMove: (id: string, position: Note["position"], pointer: { x: number; y: number }) => void;
+  onMove: (
+    id: string,
+    position: Note["position"],
+    pointer: { x: number; y: number },
+  ) => void;
   isEditing: boolean;
 }
 
@@ -46,20 +75,16 @@ export default function StickyNote({
     const drag = dragRef.current;
     if (drag?.pointerId !== event.pointerId) return;
 
-    const deltaX = event.clientX - drag.startX;
-    const deltaY = event.clientY - drag.startY;
+    const position = getBoundedPosition(event, drag);
 
-    event.currentTarget.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+    event.currentTarget.style.transform = `translate(${position.x - drag.initialX}px,${position.y - drag.initialY}px)`;
   };
 
   const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
     if (drag?.pointerId !== event.pointerId) return;
 
-    const position = {
-      x: drag.initialX + event.clientX - drag.startX,
-      y: drag.initialY + event.clientY - drag.startY,
-    };
+    const position = getBoundedPosition(event, drag);
 
     const element = event.currentTarget;
     element.style.left = `${position.x}px`;

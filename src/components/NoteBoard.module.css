@@ -9,6 +9,7 @@
   flex: 1;
   isolation: isolate;
   position: relative;
+  overflow: hidden;
 }
 
 .userMessage {

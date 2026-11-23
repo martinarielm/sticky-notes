@@ -8,9 +8,9 @@ import AppBar from "./AppBar";
 export default function NoteBoard() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isCreating, setIsCreating] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [newNote, setNewNote] = useState<Note | null>(null);
+  const isCreating = newNote !== null;
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const trashRef = useRef<HTMLDivElement>(null);
 
@@ -41,20 +41,23 @@ export default function NoteBoard() {
     pointer: { x: number; y: number },
   ) => {
     const trash = trashRef.current?.getBoundingClientRect();
-    const shouldDelete = trash &&
-      pointer.x >= trash.left && pointer.x <= trash.right &&
-      pointer.y >= trash.top && pointer.y <= trash.bottom;
+    const shouldDelete =
+      trash &&
+      pointer.x >= trash.left &&
+      pointer.x <= trash.right &&
+      pointer.y >= trash.top &&
+      pointer.y <= trash.bottom;
 
     setNotes((previous) =>
       shouldDelete
         ? previous.filter((note) => note.id !== id)
-        : previous.map((note) => (note.id === id ? { ...note, position } : note)),
+        : previous.map((note) =>
+            note.id === id ? { ...note, position } : note,
+          ),
     );
   };
 
   const handleAddNote = (width: number, height: number) => {
-    setIsCreating(true);
-
     setNewNote({
       id: crypto.randomUUID(),
       content: "",
@@ -69,27 +72,25 @@ export default function NoteBoard() {
     const board = event.currentTarget;
     const rect = board.getBoundingClientRect();
 
+    const size = {
+      width: Math.min(newNote.size.width, board.clientWidth),
+      height: Math.min(newNote.size.height, board.clientHeight),
+    };
+
     const position = {
       x: Math.max(
         0,
-        Math.min(
-          event.clientX - rect.left,
-          board.clientWidth - newNote.size.width,
-        ),
+        Math.min(event.clientX - rect.left, board.clientWidth - size.width),
       ),
       y: Math.max(
         0,
-        Math.min(
-          event.clientY - rect.top,
-          board.clientHeight - newNote.size.height,
-        ),
+        Math.min(event.clientY - rect.top, board.clientHeight - size.height),
       ),
     };
 
-    setNotes((prevNotes) => [...prevNotes, { ...newNote, position }]);
+    setNotes((previous) => [...previous, { ...newNote, position, size }]);
     setEditingNoteId(newNote.id);
     setNewNote(null);
-    setIsCreating(false);
   };
 
   const handleSaveContent = (id: string, content: string) => {
@@ -127,7 +128,11 @@ export default function NoteBoard() {
           />
         ))}
 
-        {isDragging && <div ref={trashRef} className={styles.trashZone}>Drop to delete</div>}
+        {isDragging && (
+          <div ref={trashRef} className={styles.trashZone}>
+            Drop to delete
+          </div>
+        )}
       </main>
     </div>
   );
