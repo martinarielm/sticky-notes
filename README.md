@@ -1,75 +1,41 @@
-# React + TypeScript + Vite
+# Sticky Notes
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Small desktop app built with React, TypeScript and Vite. Implements creating, moving and deleting notes.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Use Node.js 22.12+ and npm.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```sh
+npm ci
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+For a production build and local preview:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```sh
+npm run build
+npm run preview
 ```
+
+Run `npm run lint` to check the code.
+
+## Usage
+
+- Choose width and height, click Add Note, then click an empty area of the board.
+- Enter text and press Enter or click outside to save. Shift+Enter adds a line break. Text is read-only after saving.
+- Drag a note to move it. To delete it, release the pointer inside the Drop to delete zone, which appears while dragging.
+
+## Architecture
+
+NoteBoard owns the notes and the creation state. AppBar contains the size inputs and notifies the board when the user wants to add a note. StickyNote displays each note and handles text entry and pointer events. Notes use a shared TypeScript interface, and styles are split into CSS Modules.
+
+Dragging uses Pointer Events and pointer capture. The starting coordinates are stored in a ref, and a temporary CSS transform moves the note without updating React state on every pointer move. On release, the board either saves the final position or removes the note if the pointer is inside the trash zone. The initial sample notes come from an asynchronous mock in api.ts.
+
+## Notes
+
+- Minimum note size is 120 x 60 pixels. Larger notes are reduced to fit the board, and placement is adjusted at the edges.
+- Dragging is limited to the board. Notes are not automatically repositioned when the browser window is resized.
+- Resizing notes, editing saved text and keyboard alternatives for placement and dragging are not implemented.
+- There is no persistence. Reloading restores the sample notes.
+- The app is intended for desktop use at 1024 x 768 or larger.
